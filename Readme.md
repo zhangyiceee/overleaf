@@ -1,14 +1,42 @@
-# 双重差分法学习
+# 双重差分法学习code
 
 
 
+## 垃圾焚化炉code
+
+```stata
+bcuse kielmc.dta,clear
+reg rprice y81 nearinc y81nrinc
+outreg2 using "$output/did_1" ,tex keep(y81 nearinc y81nrinc ) addtext(其他控制变量,无)  dec(2) replace 
+reg rprice y81 nearinc y81nrinc age agesq
+outreg2 using "$output/did_1" ,tex keep(y81 nearinc y81nrinc ) addtext(其他控制变量,age age2) dec(2) append 
+reg rprice y81 nearinc y81nrinc age agesq intst baths land area rooms
+outreg2 using "$output/did_1" ,tex keep(y81 nearinc y81nrinc ) addtext(其他控制变量,all) dec(2) append 
+reg lrprice y81 nearinc y81nrinc 
+outreg2 using "$output/did_1" ,tex keep(y81 nearinc y81nrinc ) addtext(其他控制变量,无) dec(2) append 
+
+```
 
 
 
+## 最低工资法案--Card
+
+```stata
+*调用card数据
+use "$data/cardkrueger1994.dta",clear
+gen t_treat=t*treated
+reg fte t treated t_treat
+outreg2 using "$output/did_card" ,tex keep(t treated t_treat) addtext(control,No) dec(2) replace 
+
+reg fte t treated t_treat bk kfc  roys 
+outreg2 using "$output/did_card" ,tex keep(t treated t_treat) addtext(control,Yes) dec(2) append 
+
+
+```
 
 
 
-## 平行趋势检验
+## 平行趋势检验---Autor(2003)
 
 ```stata
 use "$data/autor-jole-2003.dta",clear
