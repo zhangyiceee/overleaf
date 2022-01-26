@@ -97,6 +97,55 @@ coefplot, keep(admico_2 admico_1 admico0 admico1 admico2 admico3 mico4)         
 graph export "$output/did_common_trend.png" ,replace
 
 
-*
+*Soap Opera 平行趋势
+
+
+use "$data/soap/Indiv.dta", clear
+
+*Drop AMCs above 95th pctile of area size (i.e., 5994 km2)
+keep if geoarea<5994
+
+keep id yr1stcov amc_code weight year B married yrsedu_head wealth_noTV catholic rural Doctors ipc_renta age agesq stock stocksq
+
+* Create dummies around coverage year
+gen byte t = year==yr1stcov
+foreach n in 1 2 3 4 5 6 7 8 9 {
+	gen byte t_m`n'= year==yr1stcov-`n'
+	gen byte t_p`n'= year==yr1stcov+`n'
+	}
+	compress
+
+xi: areg B t_m9 t_m8 t_m7 t_m6 t_m5 t_m4 t_m3 t_m2 t_m1 t t_p1 t_p2 t_p3 t_p4 t_p5 t_p6 t_p7 t_p8 t_p9 married yrsedu_head wealth_noTV catholic rural Doctors ipc_renta age agesq stock stocksq i.year [w=weight], absorb(amc_code) cluster(amc_code)
+coefplot,keep(t_m9 t_m8 t_m7 t_m6 t_m5 t_m4 t_m3 t_m2 t_m1 t t_p1 t_p2 t_p3 t_p4 t_p5 t_p6 t_p7 t_p8 t_p9) ///
+	coeflabels(t_m9="m9" t_m8="m8" t_m7="m7" t_m6="m6" t_m5="m5" t_m4="m4" t_m3="m3" t_m2="m2" t_m1="m1" t="0" ///
+	 t_p1="p1" t_p2="p2" t_p3="p3" t_p4="p4" t_p5="p5" t_p6="p6" t_p7="p7" t_p8="p8" t_p9  ="p9")  ///
+	vertical                                                                          ///
+    yline(0) ytitle("Fertility")                                                     ///
+    xtitle("Year since coverage") ///
+    addplot(line @b @at)                                                              ///
+    ciopts(recast(rcap))    rescale(100)   scheme(s1mono)                                 
+
+graph export "$output/common_trend_soap.png" ,replace
+
+
+
+* figure 4 is then created in Excel from the above estimates
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
